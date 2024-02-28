@@ -1,0 +1,16 @@
+FROM python:3.10.6-slim-buster as builder
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+# Use a lighter version of Python
+FROM python:3.10.6-slim-buster
+COPY --from=builder /app /app
+WORKDIR /app
+
+# Use Gunicorn as the entrypoint
+CMD ["gunicorn", "your_project_name.wsgi:application", "--bind", "0.0.0.0:8000"]
